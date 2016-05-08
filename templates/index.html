@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% autoescape true %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>Blogging Service</title>
+	<link rel="stylesheet" type="text/css" href="assets/style.css" />
+</head>
+<body>
+	<a href="{{ url|safe }}">Google {{ url_linktext }}</a>
+	<fb:login-button autologoutlink="true" scope="publish_stream"></fb:login-button>
+    <div id="fb-root"></div>
+	{% if user %}
+		<form action="/create" method="post">Create Blog:
+			<input value="" name="name">
+			<input type="submit" value="Create">
+		</form>
+		<form action="/switch" method="post">Switch Blog:
+			<select name="blog">
+				{% for blog in blogs %}
+					{% if blog_name == blog.name %}
+						<option value="{{ blog.name }}" selected="true">{{ blog.name }}</option>
+					{% else %}
+						<option value="{{ blog.name }}">{{ blog.name }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+			<input type="submit" value="Switch">
+		</form>
+		<form action="/delete" method="post">Delete Blog:
+			<select name="blog">
+				{% for blog in blogs %}
+					{% if blog_name == blog.name %}
+					<option value="{{ blog.key.id() }}" selected="true">{{ blog.name }}</option>
+					{% else %}
+					<option value="{{ blog.key.id() }}">{{ blog.name }}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+			<input type="submit" value="Delete">
+		</form>
+		{% if owner %}
+		<hr>
+			{% if blog_name %}
+				<table border="1" cellspacing="0">
+				<tr>
+					<th>Add Post</th>
+					<th>Upload Image</th>
+					<th>Authors</th>
+					<th>Add Author</th>
+				</tr>
+				<tr>
+					<td>
+					<form action="/post" method="post">
+						<input type="hidden" name="blog" value="{{ blog_name }}">
+						<input type="submit" name="fn" value="Add Post">
+					</form>
+					</td>
+					<td align="center">
+					<form action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
+						<input type="hidden" name="blog" value="{{ blog_name }}">
+						<input type="file" name="picture"><br>
+						<input type="submit" name="submit" value="Upload">
+					</form>
+					</td>
+					<td valign="top">
+					<ul>
+					{% for email in blog_info.email %}
+						<li>{{ email }}</li>
+					{% endfor %}
+					</ul>
+					</td>
+					<td>
+						<form action="/addauthor" method="post">Input Author Email:<br>
+							<input type="hidden" name="blog_name" value="{{ blog_name }}">
+							<input type="hidden" name="blog_id" value="{{ blog_info.key.id() }}">
+							<input value="" name="email">
+							<input type="submit" value="Add">
+						</form>
+					</td>
+				</table>
+				<p>Images:</p>
+				{% for pic in pics %}
+					<a href='/{{ blog_name }}/img/{{ pic.filename }}'><img src="{{ pic.smallUrl }}"></a>
+				{% endfor %}
+			{% endif %}
+		{% endif %}
+	{% endif %}
+	<hr>
+
+	{% if blog_name %}
+		<h1><a href="/{{ blog_name}}">{{ blog_name }}</a>  <a href="/{{ blog_name }}/xml"><img class="rss" src="assets/rss_feed_icon.gif"></a></h1>
+		{% if tags %}
+			<div>
+			Tags: 
+			{% for tag in tags %}
+				<a href="/{{ blog_name }}?tag={{ tag }}">{{ tag }}</a>
+			{% endfor %}
+			</div>
+		{% endif %}
+		<hr>
+		<div id="content">
+		{% for post in posts %}
+			<h3>{{ post.title }}</h3>
+			<div class="meta">Tags:
+			{% for tag in post.tags %}
+				<a href="/{{ blog_name }}?tag={{ tag }}">{{ tag }}</a>
+			{% endfor %}
+			</div>
+			<div class="storycontent">
+			{% if post.content|length < 500 %}
+				<p>{{ post.content }}</p>
+			{% else %}
+				<p>{{ post.content[0:500] }}...</p>
+			{% endif %}
+			</div>
+			<p><a href="/{{ blog_name }}/content/{{ post.key.id() }}">#</a></p>
+			<div class="timestamp">
+			Posted by {{ post.author }} at {{ post.created }}<br>
+			Modified by {{ post.author }} at {{ post.modified }}
+			</div>
+			<p>{% if owner %}
+				<form action="/post" method="post">
+					<input type="hidden" name="blog" value="{{ blog_name }}">
+					<input type="hidden" name="id" value="{{ post.key.id() }}">
+					<input type="submit" name="fn" value="Edit Post">
+				</form>
+				<div class="meta">Views: {{ post.views }}</div>
+			{% endif %}
+			</p>
+			<hr>
+		{% endfor %}
+		<br>
+		{% if next and next_curs %}
+			<a href="/{{ blog_name }}?tag={{ tag_select }}&cursor={{ next_curs.urlsafe() }}">Next Page</a>
+		{% endif %}
+	{% endif %}
+	</div>
+	<script>
+      window.fbAsyncInit = function() {
+        FB.init({appId: '{{ facebook_app_id }}', status: true, cookie: true,
+                 xfbml: true});
+        FB.Event.subscribe('{% if current_user %}auth.logout{% else %}auth.login{% endif %}', function(response) {
+          {% if current_user %} window.location = "/" {% else %} window.location.reload(); {% endif %}
+        });
+      };
+      (function() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+        e.async = true;
+        document.getElementById('fb-root').appendChild(e);
+      }());
+    </script>
+</body>
+</html>
+{% endautoescape %}

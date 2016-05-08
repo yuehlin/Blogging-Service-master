@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>Post</title>
+<link rel="stylesheet" type="text/css" href="/assets/style.css" />
+</head>
+<body>
+  <a href="/{{ blog_name }}">Back</a>
+	<h3>{{ method }} Post </h3>
+  <div id="content">
+    <form action="/post" method="post">
+      <div>Title: <input type='text' name='title' value='{{ title }}'></div>
+      <div>Tags: <input type='text' name='tags' value='{{ tags }}'>
+      <p>Use "," to separate different tag</p> </div>
+      <textarea name="content" rows="3" cols="60">{{ content }}</textarea>
+      <p>Add "[n]" to change to new line</p>
+      <p>To create the link, please have the space at the end of the address</p>
+      <input type=hidden name="blog" value="{{ blog_name }}">
+      <input type=hidden name="id" value="{{ id }}">
+      <input type=hidden name="fn" value="{{ fn }}">
+      <input type="submit" value="{{ method }}">
+    </form>
+  </div>
+<!--     <form action="/fbpost" method="post">
+      <div>Title: <input type='text' name='title' value='{{ title }}'></div>
+      <div>Tags: <input type='text' name='tags' value='{{ tags }}'></div>
+      <p>Use "," to separate different tag</p>
+      <div><textarea name="content" rows="3" cols="60">{{ content }}</textarea></div>
+      <p>Add "[n]" to change to new line</p>
+      <p>To create the link, please have the space at the end of the address</p>
+      <div><input type=hidden name="blog_name" value="{{ blog_name }}"></div>
+      <div><input type="submit" value="{{ method }}"></div>
+    </form> -->
+</body>
+</html>

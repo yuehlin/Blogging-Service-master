@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>{{ post.title }}</title>
+  <link rel="stylesheet" type="text/css" href="/assets/style.css" />
+</head>
+<body>
+	<a href="/{{ blog_name }}">Back</a>
+	<h3>{{ post.title }}</h3>
+    <p>{{ post.content }}</p>
+    <div class="timestamp">Modified: {{ post.modified }}</div>
+    <hr>
+    <h4>Comments</h4>
+    {% for comment in comments %}
+    	<p>{{ comment.content }}</p>
+    	<div class="timestamp">Post by {{ comment.author}} at {{ comment.created }}</div>
+    {% endfor %}
+    <form action="/comment" method="post">
+      <div><textarea name="content" rows="3" cols="60"></textarea></div>
+      <div><input type=hidden name="id" value="{{ post.key.id() }}"></div>
+      <div><input type=hidden name="blog_name" value="{{ blog_name }}"></div>
+      <div><input type="submit" value="Comment"></div>
+    </form>
+</body>
+</html>

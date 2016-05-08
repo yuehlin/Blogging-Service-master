@@ -1,0 +1,25 @@
+application: ylc280-blog
+version: 3
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /assets
+  static_dir: templates/assets
+
+- url: /.*
+  script: main.application
+
+- url: /_ah/mail/.+
+  script: handle_incoming_email.app
+  login: admin
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
+
+inbound_services:
+- mail

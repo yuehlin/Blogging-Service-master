@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+	<title>{{ blog.name }}</title>
+	<description>This is the blog "{{ blog.name }}" RSS feed</description>
+	{% for author in blog.email %}
+		<author>
+			<email>{{ author }}</email>
+		</author>
+	{% endfor %}
+	<link>{{ server_url }}/{{ blog.name }}</link>
+	<ttl>80</ttl>
+	{% for post in posts %}
+		<item>
+			<title>{{ post.title }}</title>
+			<description>{{ post.tags }}</description>
+			<description>{{ post.content }}</description>
+			<link>{{ server_url }}/{{ blog.name }}/content/{{ post.key.id() }}</link>
+			<guid>{{ post.key.id() }}</guid>
+			<pubDate>{{ post.created }}</pubDate>
+			<lastBuildDate>{{ post.modified }}</lastBuildDate>
+		</item>
+	{% endfor %}
+</channel>
+</rss>
